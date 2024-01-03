@@ -1,4 +1,4 @@
-namespace Object01Code01 {
+namespace Object01Before {
   class Invitation {
     constructor(when: Date) {
       this.when = when;

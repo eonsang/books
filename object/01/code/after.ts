@@ -1,4 +1,4 @@
-namespace Object01Code02 {
+namespace Object01After {
   class Invitation {
     constructor(when: Date) {
       this.when = when;
@@ -29,7 +29,7 @@ namespace Object01Code02 {
       this.invitation = invitation;
     }
 
-    hasInvitation(): boolean {
+    private hasInvitation(): boolean {
       return this.invitation !== null;
     }
 
@@ -37,16 +37,29 @@ namespace Object01Code02 {
       return this.ticket !== null;
     }
 
-    setTicket(ticket: Ticket): void {
+    private setTicket(ticket: Ticket): void {
       this.ticket = ticket;
     }
 
-    minusAmount(amount: number): void {
+    private minusAmount(amount: number): void {
       this.amount -= amount;
     }
 
-    plusAmount(amount: number): void {
+    private plusAmount(amount: number): void {
       this.amount += amount;
+    }
+
+    hold(ticket: Ticket): number {
+      if (this.hasInvitation()) {
+        this.setTicket(ticket);
+        return 0;
+      } else {
+        // 구매
+        const fee = ticket.getFee;
+        this.minusAmount(fee);
+        this.setTicket(ticket);
+        return fee;
+      }
     }
   }
 
@@ -62,18 +75,7 @@ namespace Object01Code02 {
     }
 
     buy(ticket: Ticket): number {
-      if (this.bag.hasInvitation()) {
-        this.bag.setTicket(ticket);
-
-        return 0;
-      } else {
-        // 구매
-        const fee = ticket.getFee;
-        this.bag.minusAmount(fee);
-        this.bag.setTicket(ticket);
-
-        return fee;
-      }
+      return this.bag.hold(ticket);
     }
   }
 
@@ -86,7 +88,7 @@ namespace Object01Code02 {
     private amount: number;
     private tickets: Ticket[];
 
-    get getTicket(): Ticket {
+    private get getTicket(): Ticket {
       const ticket = this.tickets.pop();
       if (!ticket) {
         throw new Error("매진");
@@ -95,12 +97,16 @@ namespace Object01Code02 {
       return ticket;
     }
 
-    minusAmount(amount: number): void {
+    private minusAmount(amount: number): void {
       this.amount -= amount;
     }
 
-    plusAmount(amount: number): void {
+    private plusAmount(amount: number): void {
       this.amount += amount;
+    }
+
+    selTicketTo(audience: Audience): void {
+      this.plusAmount(audience.buy(this.getTicket));
     }
   }
 
@@ -112,7 +118,7 @@ namespace Object01Code02 {
     }
 
     sellTo(audience: Audience): void {
-      this.ticketOffice.plusAmount(audience.buy(this.ticketOffice.getTicket));
+      this.ticketOffice.selTicketTo(audience);
     }
   }
 
